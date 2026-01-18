@@ -19,6 +19,9 @@ export default function Home() {
           <Link className="btn" href="/infos">Infos</Link>
           <Link className="btn" href="/rsvp">RSVP</Link>
           <Link className="btn" href="/todo">To-do</Link>
+          <Link className="btn" href="/musique">Musique</Link>
+          <Link className="btn" href="/messages">Messages</Link>
+          <Link className="btn" href="/reglement">Règlement</Link>
         </nav>
 
         <div style={{ height: 18 }} />
