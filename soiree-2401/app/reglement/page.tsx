@@ -127,7 +127,8 @@ export default function ReglementPage() {
         <nav>
           <Link className="btn" href="/">Accueil</Link>
           <Link className="btn" href="/infos">Infos</Link>
-          <Link className="btn" href="/todo">To-do</Link>
+          <Link className="btn" href="/qui-ramene">Qui ramène ?</Link>
+          <Link className="btn" href="/roulette">Roulette</Link>
           <Link className="btn" href="/musique">Musique</Link>
           <Link className="btn" href="/messages">Messages</Link>
           <Link className="btn" href="/reglement">Règlement</Link>

@@ -1,33 +1,56 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginClient() {
   const router = useRouter();
   const sp = useSearchParams();
-  const from = sp.get("from") || "/";
+
+  const from = useMemo(() => {
+    const f = sp.get("from") || "/";
+    // évite de reboucler vers /login
+    if (f.startsWith("/login")) return "/";
+    return f;
+  }, [sp]);
 
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
+
     setErr(null);
+    setLoading(true);
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: pw }),
-    });
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw }),
+      });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok) {
-      setErr("Mot de passe incorrect.");
-      return;
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {}
+
+      if (!res.ok || !data?.ok) {
+        setErr(data?.message || "Mot de passe incorrect ou erreur serveur.");
+        setLoading(false);
+        return;
+      }
+
+      // force un refresh côté app router (cookies/session)
+      router.replace(from);
+      router.refresh();
+    } catch (e: any) {
+      setErr(e?.message || "Erreur réseau.");
+    } finally {
+      setLoading(false);
     }
-
-    router.replace(from);
   }
 
   return (
@@ -46,6 +69,8 @@ export default function LoginClient() {
                 type="password"
                 value={pw}
                 onChange={(e) => setPw(e.target.value)}
+                disabled={loading}
+                autoFocus
               />
             </div>
 
@@ -55,7 +80,14 @@ export default function LoginClient() {
               </div>
             )}
 
-            <button className="btn" type="submit">Entrer</button>
+            <button className="btn" type="submit" disabled={loading || !pw}>
+              {loading ? "Connexion..." : "Entrer"}
+            </button>
+
+            {/* mini debug utile */}
+            <div style={{ opacity: 0.6, fontSize: 12 }}>
+              Redirection après login : <code>{from}</code>
+            </div>
           </form>
         </div>
       </div>
