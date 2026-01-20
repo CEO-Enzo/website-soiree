@@ -1,0 +1,11 @@
+{
+  "items": [
+    {
+      "id": "b4d433fa-b4a0-4517-9419-333c286b42dd",
+      "label": "Pizza",
+      "category": "Nourriture",
+      "assignedTo": "Enzo"
+    }
+  ],
+  "updatedAt": 1768933143964
+}

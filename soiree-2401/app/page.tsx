@@ -49,7 +49,7 @@ export default function Home() {
             <div className="section-title">Compte à rebours</div>
             <ClientCountdown eventIso={eventIso} />
             <div className="small" style={{ marginTop: 10 }}>
-              Astuce : arrive quand tu veux à partir de 19h, mais plus tôt = plus chill.
+              ⏳ Hâte de vous voir tous • n'oubliez pas de confirmer votre présence !
             </div>
           </div>
 
@@ -78,7 +78,7 @@ export default function Home() {
         <div style={{ height: 14 }} />
 
         <div className="card">
-          <div className="section-title">Programme (modifiable)</div>
+          <div className="section-title">Programme</div>
           <div className="timeline">
             <div className="step">
               <div className="dot" />
@@ -97,8 +97,8 @@ export default function Home() {
             <div className="step">
               <div className="dot" />
               <div>
-                <div className="time">22h30 — Peak</div>
-                <div className="desc">On monte le son (raisonnable 😄).</div>
+                <div className="time">23h00 — Respect du voisinage</div>
+                <div className="desc">On baisse le son (un peu 😄).</div>
               </div>
             </div>
           </div>
