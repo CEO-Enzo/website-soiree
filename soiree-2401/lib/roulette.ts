@@ -4,6 +4,9 @@ import path from "path";
 export type RouletteData = {
   participants: string[];
   lastSpinAt: number | null;
+
+  // ✅ snapshot utilisé pour l'affichage de la roue après reset
+  lastParticipants: string[];
 };
 
 const STORAGE_DIR = path.join(process.cwd(), "storage");
@@ -13,6 +16,7 @@ const PRESENTS_FILE = path.join(STORAGE_DIR, "presents.txt");
 const DEFAULT: RouletteData = {
   participants: [],
   lastSpinAt: null,
+  lastParticipants: [],
 };
 
 async function ensureStorage() {
@@ -60,10 +64,24 @@ export async function readPresents(): Promise<string[]> {
   }
 }
 
-// ✅ Spin visuel-only : on met juste à jour lastSpinAt
+/**
+ * ✅ Spin visuel-only :
+ * - snapshot des participants dans lastParticipants (pour la roue)
+ * - déclenche l'overlay via lastSpinAt
+ * - reset participants pour la prochaine manche
+ */
 export async function spinRoulette() {
   const r = await readRoulette();
+
+  // snapshot pour l'affichage
+  r.lastParticipants = [...(r.participants || [])];
+
+  // déclencheur overlay
   r.lastSpinAt = Date.now();
+
+  // reset participants
+  r.participants = [];
+
   await writeRoulette(r);
   return r;
 }

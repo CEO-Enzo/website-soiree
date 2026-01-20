@@ -17,7 +17,6 @@ export default function Home() {
         <nav>
           <Link className="btn" href="/">Accueil</Link>
           <Link className="btn" href="/infos">Infos</Link>
-          <Link className="btn" href="/rsvp">RSVP</Link>
           <Link className="btn" href="/todo">To-do</Link>
           <Link className="btn" href="/musique">Musique</Link>
           <Link className="btn" href="/messages">Messages</Link>
@@ -106,7 +105,6 @@ export default function Home() {
 
           <div style={{ height: 12 }} />
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Link className="btn" href="/rsvp">Je confirme</Link>
             <Link className="btn" href="/todo">Je regarde quoi ramener</Link>
           </div>
         </div>

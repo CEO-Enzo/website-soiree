@@ -113,25 +113,6 @@ const AddressCard = (
     </div>
   ) : null;
 
-  // =========================
-  // HERO MODE → bouton visible
-  // =========================
-  if (mode === "hero") {
-    return (
-      <>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <Link className="btn" href="/rsvp">
-            Répondre (RSVP)
-          </Link>
-          {GoBtn}
-          <Link className="btn" href="/todo">
-            Voir la to-do
-          </Link>
-        </div>
-        {toastUI}
-      </>
-    );
-  }
 
   // =========================
   // CARDS MODE → PAS DE BOUTON

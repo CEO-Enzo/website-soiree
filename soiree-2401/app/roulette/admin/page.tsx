@@ -11,24 +11,33 @@ type RouletteState = {
   lastParticipants: string[];
 };
 
-export default function RouletteAdminPage() {
-  const [roulette, setRoulette] = useState<RouletteState>({
-    participants: [],
-    lastWinner: null,
-    lastWinnerIndex: null,
-    lastSpinAt: null,
-    lastParticipants: [],
-  });
+const EMPTY_ROULETTE: RouletteState = {
+  participants: [],
+  lastWinner: null,
+  lastWinnerIndex: null,
+  lastSpinAt: null,
+  lastParticipants: [],
+};
 
+export default function RouletteAdminPage() {
+  const [roulette, setRoulette] = useState<RouletteState>(EMPTY_ROULETTE);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  const safeRoulette = roulette ?? EMPTY_ROULETTE;
 
   async function load() {
     try {
       const res = await fetch("/api/roulette/state", { cache: "no-store" });
       const data = await res.json().catch(() => ({}));
-      if (data?.ok) setRoulette(data.roulette);
-    } catch {}
+
+      if (data?.ok) {
+        // ✅ fallback si API renvoie roulette undefined
+        setRoulette((data.roulette as RouletteState) ?? EMPTY_ROULETTE);
+      }
+    } catch {
+      // on ne met pas d'erreur ici pour éviter de spammer l'UI
+    }
   }
 
   useEffect(() => {
@@ -50,7 +59,8 @@ export default function RouletteAdminPage() {
         return;
       }
 
-      setRoulette(data.roulette);
+      // ✅ idem: sécurise la réponse
+      setRoulette((data.roulette as RouletteState) ?? EMPTY_ROULETTE);
       setLoading(false);
     } catch {
       setErr("Erreur réseau");
@@ -70,9 +80,15 @@ export default function RouletteAdminPage() {
     >
       {/* NAV */}
       <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
-        <Link className="btn" href="/dashboard">Dashboard</Link>
-        <Link className="btn" href="/roulette">Roulette</Link>
-        <Link className="btn" href="/">Accueil</Link>
+        <Link className="btn" href="/dashboard">
+          Dashboard
+        </Link>
+        <Link className="btn" href="/roulette">
+          Roulette
+        </Link>
+        <Link className="btn" href="/">
+          Accueil
+        </Link>
       </div>
 
       <div
@@ -89,9 +105,7 @@ export default function RouletteAdminPage() {
           <div style={{ fontSize: 34 }}>🎛️</div>
           <div>
             <h1 style={{ fontSize: 36, fontWeight: 950, margin: 0 }}>Roulette Admin</h1>
-            <div style={{ opacity: 0.7 }}>
-              Lance la roulette depuis ici (à projeter / contrôler par le DJ).
-            </div>
+            <div style={{ opacity: 0.7 }}>Lance la roulette depuis ici (à projeter / contrôler par le DJ).</div>
           </div>
         </div>
 
@@ -106,12 +120,12 @@ export default function RouletteAdminPage() {
           }}
         >
           <div style={{ fontWeight: 950, fontSize: 18 }}>
-            Participants ({roulette.participants?.length || 0})
+            Participants ({safeRoulette.participants.length})
           </div>
 
-          {roulette.participants?.length ? (
+          {safeRoulette.participants.length ? (
             <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {roulette.participants.map((p) => (
+              {safeRoulette.participants.map((p) => (
                 <span
                   key={p}
                   style={{
