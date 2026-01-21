@@ -81,6 +81,27 @@ export default function MusiquePage() {
     }
   }
 
+  // styles "responsive" inline
+  const rowStyle: React.CSSProperties = {
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    flexWrap: "wrap", // ✅ important: évite le dépassement sur mobile
+  };
+
+  const textWrap: React.CSSProperties = {
+    flex: 1,
+    minWidth: 220, // ✅ sur mobile ça force le texte à passer à la ligne si besoin
+  };
+
+  const btnWrap: React.CSSProperties = {
+    display: "flex",
+    gap: 10,
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  };
+
   return (
     <div className="bg">
       <div className="container">
@@ -147,48 +168,94 @@ export default function MusiquePage() {
 
           {msg && <p className="small" style={{ marginTop: 10 }}>{msg}</p>}
 
+          {/* Résultats */}
           <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
             {items.map((t) => (
-              <div key={t.id} className="card" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <div
+                key={t.id}
+                className="card"
+                style={{
+                  ...rowStyle,
+                  padding: 14,
+                  overflow: "hidden", // ✅ sécurité anti overflow
+                }}
+              >
                 {t.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={t.image} width={44} height={44} alt="" style={{ borderRadius: 12 }} />
+                  <img src={t.image} width={44} height={44} alt="" style={{ borderRadius: 12, flex: "0 0 auto" }} />
                 ) : (
                   <div style={{ width: 44, height: 44, borderRadius: 12, border: "1px solid var(--border)" }} />
                 )}
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <strong style={{ display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <div style={textWrap}>
+                  <strong
+                    style={{
+                      display: "block",
+                      // ✅ sur mobile on laisse respirer (pas de nowrap)
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     {t.name}
                   </strong>
-                  <div className="small" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div
+                    className="small"
+                    style={{
+                      marginTop: 4,
+                      opacity: 0.85,
+                      // ✅ autorise le retour à la ligne si ça déborde
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word",
+                    }}
+                  >
                     {t.artist} • {t.album}
                   </div>
                 </div>
 
-                <button className="btn" onClick={() => add(t.uri)} disabled={!connected}>
-                  Ajouter
-                </button>
+                <div style={btnWrap}>
+                  <button
+                    className="btn"
+                    onClick={() => add(t.uri)}
+                    disabled={!connected}
+                    style={{
+                      // ✅ sur mobile, bouton prend toute la largeur si wrap
+                      minWidth: 120,
+                    }}
+                  >
+                    Ajouter
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
+          {/* FILE D’ATTENTE */}
           {showQueue && (
             <div style={{ marginTop: 18 }}>
               <div className="sep" />
 
               <div className="section-title">En cours</div>
               {current ? (
-                <div className="card" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div className="card" style={{ ...rowStyle, padding: 14 }}>
                   {current.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={current.image} width={44} height={44} alt="" style={{ borderRadius: 12 }} />
                   ) : (
                     <div style={{ width: 44, height: 44, borderRadius: 12, border: "1px solid var(--border)" }} />
                   )}
-                  <div>
-                    <strong>{current.name}</strong>
-                    <div className="small">{current.artist}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <strong
+                      style={{
+                        display: "block",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxWidth: "100%",
+                      }}
+                    >
+                      {current.name}
+                    </strong>
+                    <div className="small" style={{ opacity: 0.85 }}>{current.artist}</div>
                   </div>
                 </div>
               ) : (
@@ -209,16 +276,27 @@ export default function MusiquePage() {
                   <div className="small">Aucune musique en attente.</div>
                 ) : (
                   queue.map((t) => (
-                    <div key={t.id} className="card" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <div key={t.id} className="card" style={{ ...rowStyle, padding: 14 }}>
                       {t.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={t.image} width={40} height={40} alt="" style={{ borderRadius: 12 }} />
                       ) : (
                         <div style={{ width: 40, height: 40, borderRadius: 12, border: "1px solid var(--border)" }} />
                       )}
-                      <div>
-                        <strong>{t.name}</strong>
-                        <div className="small">{t.artist}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <strong
+                          style={{
+                            display: "block",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {t.name}
+                        </strong>
+                        <div className="small" style={{ opacity: 0.85, overflowWrap: "anywhere" }}>
+                          {t.artist}
+                        </div>
                       </div>
                     </div>
                   ))
