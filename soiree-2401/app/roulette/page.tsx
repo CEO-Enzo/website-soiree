@@ -11,7 +11,10 @@ export default function RoulettePage() {
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  const canJoin = useMemo(() => selected.trim().length > 0 && !loading, [selected, loading]);
+  const canJoin = useMemo(
+    () => selected.trim().length > 0 && !loading,
+    [selected, loading]
+  );
 
   // Charger les présents (storage/presents.txt via API)
   useEffect(() => {
@@ -79,7 +82,7 @@ export default function RoulettePage() {
   return (
     <div className="bg">
       <div className="container">
-        {/* NAVBAR (même style que le reste) */}
+        {/* NAVBAR */}
         <nav>
           <Link className="btn" href="/">Accueil</Link>
           <Link className="btn" href="/infos">Infos</Link>
@@ -94,18 +97,35 @@ export default function RoulettePage() {
 
         <div className="card">
           <h1 className="h1" style={{ fontSize: 34 }}>Roulette 🎡</h1>
-          <p className="p">Sélectionne ton nom et clique sur « Je participe ».</p>
+          <p className="p">
+            Sélectionne ton nom et clique sur « Je participe ».
+          </p>
 
           <div className="sep" />
 
-          {/* TOP ACTIONS / FEEDBACK */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+          {/* FEEDBACK */}
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <span className="chip">👥 Participants : {participants.length}</span>
-            <button className="btn" onClick={loadParticipants} disabled={loading}>
+            <button
+              className="btn"
+              onClick={loadParticipants}
+              disabled={loading}
+            >
               Rafraîchir
             </button>
             {info && <span className="small">{info}</span>}
-            {err && <span className="small" style={{ opacity: 0.9 }}>❌ {err}</span>}
+            {err && (
+              <span className="small" style={{ opacity: 0.9 }}>
+                ❌ {err}
+              </span>
+            )}
           </div>
 
           <div style={{ height: 14 }} />
@@ -128,13 +148,28 @@ export default function RoulettePage() {
                   </option>
                 ))}
               </select>
-              <div className="small" style={{ opacity: 0.7, marginTop: 8 }}>
-                Si ton nom n’est pas là, il faut l’ajouter dans <b>storage/presents.txt</b>.
+              <div
+                className="small"
+                style={{ opacity: 0.7, marginTop: 8 }}
+              >
+                Si ton nom n’est pas là, ajoute-le dans{" "}
+                <b>storage/presents.txt</b>.
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "end", gap: 10, flexWrap: "wrap" }}>
-              <button className="btn" onClick={join} disabled={!canJoin}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "end",
+                gap: 10,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                className="btn"
+                onClick={join}
+                disabled={!canJoin}
+              >
                 {loading ? "Ajout..." : "Je participe"}
               </button>
             </div>
@@ -142,26 +177,42 @@ export default function RoulettePage() {
 
           <div style={{ height: 14 }} />
 
-          {/* PARTICIPANTS LIST */}
+          {/* PARTICIPANTS */}
           <div className="card" style={{ padding: 14 }}>
             <div className="section-title">Participants</div>
 
             {participants.length === 0 ? (
-              <div className="small" style={{ opacity: 0.7, marginTop: 8 }}>
+              <div
+                className="small"
+                style={{ opacity: 0.7, marginTop: 8 }}
+              >
                 Personne pour l’instant.
               </div>
             ) : (
-              <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 10 }}>
+              <div
+                style={{
+                  marginTop: 10,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 10,
+                }}
+              >
                 {participants.map((p) => (
-                  <span key={p} className="chip" style={{ fontWeight: 900 }}>
+                  <span
+                    key={p}
+                    className="chip"
+                    style={{ fontWeight: 900 }}
+                  >
                     {p}
                   </span>
                 ))}
               </div>
             )}
 
-            <div style={{ marginTop: 12 }} className="small" style={{ opacity: 0.75 }}>
-              Astuce : ouvre <b>/roulette</b> sur le projecteur, et lance depuis la page Admin.
+            <div
+              className="small"
+              style={{ marginTop: 12, opacity: 0.75 }}
+            >
             </div>
           </div>
         </div>

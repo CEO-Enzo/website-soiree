@@ -1,64 +1,56 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function RoulettePage() {
-  const [names, setNames] = useState<string[]>([]);
-  const [participants, setParticipants] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string>("");
+type RouletteState = {
+  participants: string[];
+  lastWinner: string | null;
+  lastWinnerIndex: number | null;
+  lastSpinAt: number | null;
+  lastParticipants: string[];
+};
+
+const EMPTY_ROULETTE: RouletteState = {
+  participants: [],
+  lastWinner: null,
+  lastWinnerIndex: null,
+  lastSpinAt: null,
+  lastParticipants: [],
+};
+
+export default function RouletteAdminPage() {
+  const [roulette, setRoulette] = useState<RouletteState>(EMPTY_ROULETTE);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
 
-  const canJoin = useMemo(
-    () => selected.trim().length > 0 && !loading,
-    [selected, loading]
-  );
+  const safeRoulette = roulette ?? EMPTY_ROULETTE;
 
-  // Charger les présents (storage/presents.txt via API)
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/roulette/names", { cache: "no-store" });
-        const data = await res.json().catch(() => ({}));
-        setNames(Array.isArray(data.names) ? data.names : []);
-      } catch {
-        setNames([]);
-      }
-    })();
-  }, []);
-
-  async function loadParticipants() {
+  async function load() {
     try {
       const res = await fetch("/api/roulette/state", { cache: "no-store" });
       const data = await res.json().catch(() => ({}));
-      if (data?.ok) setParticipants(data.roulette?.participants || []);
+
+      if (data?.ok) {
+        // ✅ fallback si API renvoie roulette undefined
+        setRoulette((data.roulette as RouletteState) ?? EMPTY_ROULETTE);
+      }
     } catch {
-      // silencieux
+      // on ne met pas d'erreur ici pour éviter de spammer l'UI
     }
   }
 
   useEffect(() => {
-    loadParticipants();
-    const t = setInterval(loadParticipants, 3000);
+    load();
+    const t = setInterval(load, 2000);
     return () => clearInterval(t);
   }, []);
 
-  async function join() {
-    if (!canJoin) return;
-
+  async function spin() {
     setLoading(true);
     setErr(null);
-    setInfo(null);
-
     try {
-      const res = await fetch("/api/roulette/join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: selected }),
-      });
-
+      const res = await fetch("/api/roulette/spin", { method: "POST" });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok || !data?.ok) {
@@ -67,12 +59,9 @@ export default function RoulettePage() {
         return;
       }
 
-      setSelected("");
-      setInfo("Ajouté ✅");
-      setTimeout(() => setInfo(null), 1500);
-
+      // ✅ idem: sécurise la réponse
+      setRoulette((data.roulette as RouletteState) ?? EMPTY_ROULETTE);
       setLoading(false);
-      loadParticipants();
     } catch {
       setErr("Erreur réseau");
       setLoading(false);
@@ -80,146 +69,102 @@ export default function RoulettePage() {
   }
 
   return (
-    <div className="bg">
-      <div className="container">
-        {/* NAVBAR */}
-        <nav>
-          <Link className="btn" href="/">Accueil</Link>
-          <Link className="btn" href="/infos">Infos</Link>
-          <Link className="btn" href="/qui-ramene">Qui ramène ?</Link>
-          <Link className="btn" href="/roulette">Roulette</Link>
-          <Link className="btn" href="/musique">Musique</Link>
-          <Link className="btn" href="/messages">Messages</Link>
-          <Link className="btn" href="/reglement">Règlement</Link>
-        </nav>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(180deg,#0b0b0f,#0f1220)",
+        color: "white",
+        padding: 32,
+        fontFamily: "Inter, system-ui, sans-serif",
+      }}
+    >
+      {/* NAV */}
+      <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+        <Link className="btn" href="/dashboard">
+          Dashboard
+        </Link>
+        <Link className="btn" href="/roulette">
+          Roulette
+        </Link>
+        <Link className="btn" href="/">
+          Accueil
+        </Link>
+      </div>
 
-        <div style={{ height: 18 }} />
-
-        <div className="card">
-          <h1 className="h1" style={{ fontSize: 34 }}>Roulette 🎡</h1>
-          <p className="p">
-            Sélectionne ton nom et clique sur « Je participe ».
-          </p>
-
-          <div className="sep" />
-
-          {/* FEEDBACK */}
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              flexWrap: "wrap",
-              alignItems: "center",
-            }}
-          >
-            <span className="chip">👥 Participants : {participants.length}</span>
-            <button
-              className="btn"
-              onClick={loadParticipants}
-              disabled={loading}
-            >
-              Rafraîchir
-            </button>
-            {info && <span className="small">{info}</span>}
-            {err && (
-              <span className="small" style={{ opacity: 0.9 }}>
-                ❌ {err}
-              </span>
-            )}
-          </div>
-
-          <div style={{ height: 14 }} />
-
-          {/* SELECT + CTA */}
-          <div className="grid2">
-            <div>
-              <label className="label">Ton nom</label>
-              <select
-                className="input"
-                value={selected}
-                onChange={(e) => setSelected(e.target.value)}
-              >
-                <option value="" disabled>
-                  — Sélectionne ton nom —
-                </option>
-                {names.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              <div
-                className="small"
-                style={{ opacity: 0.7, marginTop: 8 }}
-              >
-                Si ton nom n’est pas là, ajoute-le dans{" "}
-                <b>storage/presents.txt</b>.
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "end",
-                gap: 10,
-                flexWrap: "wrap",
-              }}
-            >
-              <button
-                className="btn"
-                onClick={join}
-                disabled={!canJoin}
-              >
-                {loading ? "Ajout..." : "Je participe"}
-              </button>
-            </div>
-          </div>
-
-          <div style={{ height: 14 }} />
-
-          {/* PARTICIPANTS */}
-          <div className="card" style={{ padding: 14 }}>
-            <div className="section-title">Participants</div>
-
-            {participants.length === 0 ? (
-              <div
-                className="small"
-                style={{ opacity: 0.7, marginTop: 8 }}
-              >
-                Personne pour l’instant.
-              </div>
-            ) : (
-              <div
-                style={{
-                  marginTop: 10,
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 10,
-                }}
-              >
-                {participants.map((p) => (
-                  <span
-                    key={p}
-                    className="chip"
-                    style={{ fontWeight: 900 }}
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div
-              className="small"
-              style={{ marginTop: 12, opacity: 0.75 }}
-            >
-
-            </div>
+      <div
+        style={{
+          maxWidth: 920,
+          margin: "0 auto",
+          background: "rgba(255,255,255,0.05)",
+          borderRadius: 24,
+          padding: 28,
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ fontSize: 34 }}>🎛️</div>
+          <div>
+            <h1 style={{ fontSize: 36, fontWeight: 950, margin: 0 }}>Roulette Admin</h1>
+            <div style={{ opacity: 0.7 }}>Lance la roulette depuis ici (à projeter / contrôler par le DJ).</div>
           </div>
         </div>
 
-        <div style={{ height: 16 }} />
-        <div className="small" style={{ opacity: 0.7 }} />
+        <hr style={{ margin: "22px 0", opacity: 0.2 }} />
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            borderRadius: 18,
+            padding: 18,
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <div style={{ fontWeight: 950, fontSize: 18 }}>
+            Participants ({safeRoulette.participants.length})
+          </div>
+
+          {safeRoulette.participants.length ? (
+            <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {safeRoulette.participants.map((p) => (
+                <span
+                  key={p}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 999,
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    fontWeight: 900,
+                  }}
+                >
+                  {p}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div style={{ opacity: 0.6, marginTop: 8 }}>Personne pour l’instant</div>
+          )}
+
+          <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={spin}
+              disabled={loading}
+              className="btn"
+              style={{
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? "not-allowed" : "pointer",
+                fontWeight: 950,
+              }}
+            >
+              Lancer la roulette 🎡
+            </button>
+
+            {err && <div style={{ color: "#ffb3b3", fontWeight: 900 }}>{err}</div>}
+          </div>
+
+          <div style={{ marginTop: 10, opacity: 0.6, fontSize: 13 }}>
+            Astuce : laisse le dashboard ouvert sur le projecteur, et lance ici → la roue apparaît en grand.
+          </div>
+        </div>
       </div>
     </div>
   );
