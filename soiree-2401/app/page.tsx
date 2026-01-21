@@ -30,13 +30,15 @@ export default function Home() {
           <div className="hero-inner">
             <h1 className="h1">{title}</h1>
             <p className="p">Samedi 24/01 • à partir de 19h • accès privé</p>
+{/*
+<div className="chips">
+  <span className="chip">🥂 Boissons & snacks</span>
+  <span className="chip">🎶 Musique</span>
+  <span className="chip">📍 Authie (14)</span>
+  <span className="chip">👗 Thème : à définir</span>
+</div>
+*/}
 
-            <div className="chips">
-              <span className="chip">🥂 Boissons & snacks</span>
-              <span className="chip">🎶 Musique</span>
-              <span className="chip">📍 Authie (14)</span>
-              <span className="chip">👗 Thème : à définir</span>
-            </div>
 
             <div style={{ height: 16 }} />
             <QuickNavCards address={address} lat={lat} lng={lng} mode="hero" />
@@ -117,11 +119,16 @@ export default function Home() {
           <div className="faq">
             <details>
               <summary>Je ramène quelque chose ?</summary>
-              <p>Si tu veux aider : check la page To-do. On met tout là (glaçons, soft, gobelets…).</p>
+              <p>Si tu veux aider : check la page Qui-Ramène. On met tout là (soft, Alcool, nourriture...).</p>
             </details>
             <details>
-              <summary>Thème / dress code ?</summary>
-              <p>À définir. On peut mettre “chic”, “néon”, “années 2000”…</p>
+<summary>Thème / dress code ?</summary>
+<p>
+  Ambiance chill ✨  
+  Venez bien habillés, posez-vous, faites-vous plaisir — pas besoin d’en faire trop, 
+  mais un petit effort sur la tenue fait toujours la diff 😉
+</p>
+
             </details>
           </div>
         </div>

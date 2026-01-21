@@ -152,8 +152,6 @@ export default function RoulettePage() {
                 className="small"
                 style={{ opacity: 0.7, marginTop: 8 }}
               >
-                Si ton nom n’est pas là, ajoute-le dans{" "}
-                <b>storage/presents.txt</b>.
               </div>
             </div>
 

@@ -178,9 +178,7 @@ export default function QuiRamenePage() {
             <button className="btn" onClick={addItem} disabled={loading || label.trim().length === 0}>
               {loading ? "..." : "Ajouter"}
             </button>
-            <span className="small" style={{ opacity: 0.75 }}>
-              Attribution via <b>storage/presents.txt</b>
-            </span>
+
           </div>
 
           <div style={{ height: 14 }} />

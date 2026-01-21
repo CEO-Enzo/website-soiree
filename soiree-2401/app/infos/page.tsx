@@ -54,9 +54,11 @@ export default function InfosPage() {
 
             <div className="card">
               <div className="section-title">Thème / dress code</div>
-              <p className="p">À définir</p>
+              <p className="p">CHIC</p>
               <p className="small">
-                Exemples : chic, casual, néon, années 2000…
+  Ambiance chill ✨  
+  Venez bien habillés, posez-vous, faites-vous plaisir — pas besoin d’en faire trop, 
+  mais un petit effort sur la tenue fait toujours la diff 😉
               </p>
             </div>
           </div>
