@@ -140,7 +140,7 @@ export default function MusiquePage() {
               <label className="label">Recherche</label>
               <input
                 className="input"
-                placeholder="Ex: Stromae papaoutai"
+                placeholder="Ex: LES DIAMANTS DE BOKASSA - Ninho"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && search()}
