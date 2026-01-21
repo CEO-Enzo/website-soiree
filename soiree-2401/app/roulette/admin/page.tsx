@@ -213,8 +213,7 @@ export default function RoulettePage() {
               className="small"
               style={{ marginTop: 12, opacity: 0.75 }}
             >
-              Astuce : ouvre <b>/roulette</b> sur le projecteur, et lance depuis
-              la page Admin.
+
             </div>
           </div>
         </div>
