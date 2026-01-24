@@ -617,9 +617,9 @@ export default function DashboardPage() {
           )}
 
           <div style={{ minHeight: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 950, marginBottom: 10 }}>À venir</div>
+            <div style={{ fontSize: 18, fontWeight: 950, marginBottom: 10 }}>À venir (top 10)</div>
             <div style={{ display: "grid", gap: 10, overflow: "auto", paddingRight: 8, minHeight: 0 }}>
-              {(music.next || []).slice(0, 5).map((t, idx) => (
+              {(music.next || []).slice(0, 10).map((t, idx) => (
                 <div
                   key={t.id || `${t.name}-${t.artist}-${idx}`}
                   style={{
