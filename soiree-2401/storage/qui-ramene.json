@@ -1,11 +1,17 @@
 {
   "items": [
     {
+      "id": "8962e1b9-eddd-4cb8-a24c-a7e1e76e305d",
+      "label": "Jager",
+      "category": "Alcool",
+      "assignedTo": ""
+    },
+    {
       "id": "b4d433fa-b4a0-4517-9419-333c286b42dd",
       "label": "Pizza",
       "category": "Nourriture",
       "assignedTo": "Enzo"
     }
   ],
-  "updatedAt": 1768933143964
+  "updatedAt": 1769002796618
 }
